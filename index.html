@@ -138,6 +138,7 @@
             border-radius: 12px;
             box-shadow: 0 1px 8px rgba(0,0,0,0.06);
             padding: 48px;
+            padding-bottom: 80px;
             margin-bottom: 24px;
             border: 1px solid var(--border);
         }
@@ -181,7 +182,7 @@
             font-size: 1.15rem;
             font-weight: 700;
             color: var(--primary);
-            margin: 28px 0 14px;
+            margin: 36px 0 14px;
             padding-bottom: 6px;
             border-bottom: 2px solid var(--burgundy-light);
             display: inline-block;
@@ -602,7 +603,7 @@
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
-            .top-bar, .progress-bar, .actions-bar, .clear-sig, .sig-placeholder, .toast { display: none !important; }
+            .top-bar, .progress-bar, .actions-bar, .clear-sig, .sig-placeholder, .toast, .instruction-banner, .confirm-section, .back-to-top { display: none !important; }
             .contract-wrapper { padding: 0; max-width: 100%; }
             .contract-page {
                 box-shadow: none;
@@ -833,6 +834,144 @@
             color: var(--error);
             font-size: 0.8rem;
         }
+
+        /* Field valid state */
+        .editable-field.valid {
+            border-bottom-color: var(--success);
+            border-bottom-style: solid;
+        }
+
+        /* Instruction banner */
+        .instruction-banner {
+            background: var(--burgundy-soft);
+            border: 1px solid var(--burgundy-light);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #555;
+            line-height: 1.6;
+        }
+        .instruction-banner .icon {
+            font-size: 1.3rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        /* Important section highlight */
+        .important-section {
+            background: #fff8f0;
+            border: 1px solid #f0d9b5;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-top: 6px;
+        }
+
+        /* Confirmation checkbox */
+        .confirm-section {
+            background: var(--burgundy-soft);
+            border: 2px solid var(--burgundy-light);
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin: 30px 0 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .confirm-section:hover {
+            border-color: var(--burgundy);
+        }
+        .confirm-section.checked {
+            border-color: var(--success);
+            background: #f0f8f0;
+        }
+        .confirm-section input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            margin-top: 2px;
+            flex-shrink: 0;
+            accent-color: var(--burgundy);
+            cursor: pointer;
+        }
+        .confirm-section label {
+            font-size: 0.92rem;
+            color: #333;
+            cursor: pointer;
+            line-height: 1.7;
+            user-select: none;
+        }
+        .confirm-section.invalid-confirm {
+            border-color: var(--error);
+            animation: shake 0.4s ease;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: 90px;
+            left: 24px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 99;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s;
+        }
+        .back-to-top.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .back-to-top:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+
+        /* Provider email overflow fix */
+        .party-detail span {
+            word-break: break-all;
+        }
+
+        @media (max-width: 768px) {
+            .back-to-top {
+                bottom: 100px;
+                left: 16px;
+                width: 40px;
+                height: 40px;
+            }
+            .instruction-banner {
+                font-size: 0.85rem;
+                padding: 12px 14px;
+            }
+            .confirm-section {
+                padding: 14px 16px;
+            }
+            .confirm-section label {
+                font-size: 0.87rem;
+            }
+            .contract-page {
+                padding-bottom: 60px;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -872,6 +1011,14 @@
 <!-- Contract -->
 <div class="contract-wrapper" id="contractContent">
     <div class="contract-page">
+
+        <!-- Instruction Banner -->
+        <div class="instruction-banner">
+            <span class="icon">&#128221;</span>
+            <div>
+                <strong>שלום!</strong> קרא/י את ההסכם בעיון, מלא/י את הפרטים שלך, אשר/י שקראת את ההסכם, חתום/י למטה ולחץ/י על "שמירה כ-PDF".
+            </div>
+        </div>
 
         <!-- Header -->
         <div class="contract-header">
@@ -950,11 +1097,13 @@
 
         <h3 class="section-title">מדיניות ביטולים</h3>
         <div class="contract-text">
-            <ul class="contract-list">
-                <li>ביטול עד 14 ימים לפני תחילת התוכנית יזכה את הלקוח/ה בהחזר של 50% מהמקדמה.</li>
-                <li>ביטול בתוך 14 הימים שלפני תחילת התוכנית לא יזכה בהחזר על המקדמה.</li>
-                <li>ביטול לאחר תחילת התוכנית לא יזכה בהחזר כספי כלל.</li>
-            </ul>
+            <div class="important-section">
+                <ul class="contract-list">
+                    <li>ביטול עד 14 ימים לפני תחילת התוכנית יזכה את הלקוח/ה בהחזר של 50% מהמקדמה.</li>
+                    <li>ביטול בתוך 14 הימים שלפני תחילת התוכנית לא יזכה בהחזר על המקדמה.</li>
+                    <li>ביטול לאחר תחילת התוכנית לא יזכה בהחזר כספי כלל.</li>
+                </ul>
+            </div>
         </div>
 
         <h3 class="section-title">זמינות ותמיכה</h3>
@@ -976,7 +1125,9 @@
 
         <h3 class="section-title">הגבלת אחריות</h3>
         <div class="contract-text">
-            <p>המלווה אינה מתחייבת לתוצאות מסוימות, אלא להעברת הידע והכלים הנדרשים לקידום העסק. הצלחת התהליך תלויה במידת ההשקעה של הלקוח/ה וביישום ההנחיות.</p>
+            <div class="important-section">
+                <p>המלווה אינה מתחייבת לתוצאות מסוימות, אלא להעברת הידע והכלים הנדרשים לקידום העסק. הצלחת התהליך תלויה במידת ההשקעה של הלקוח/ה וביישום ההנחיות.</p>
+            </div>
         </div>
 
         <h3 class="section-title">סודיות</h3>
@@ -988,6 +1139,12 @@
         <div class="contract-text">
             <p>כל שינוי או תוספת להסכם זה יוחתמו ויאשרו על ידי שני הצדדים.</p>
             <p>החוזה אינו יוצר יחסי עובד-מעביד בין הצדדים.</p>
+        </div>
+
+        <!-- Confirmation Checkbox -->
+        <div class="confirm-section" id="confirmSection" onclick="toggleConfirm()">
+            <input type="checkbox" id="confirmCheckbox">
+            <label for="confirmCheckbox">קראתי את כל תנאי ההסכם, אני מבין/ה ומסכימ/ה לתנאים המפורטים לעיל, כולל תנאי התשלום ומדיניות הביטולים.</label>
         </div>
 
         <!-- Signatures -->
@@ -1018,6 +1175,11 @@
         </div>
     </div>
 </div>
+
+<!-- Back to Top -->
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0})">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
 
 <!-- Actions Bar -->
 <div class="actions-bar">
@@ -1154,6 +1316,16 @@
         if (conn && state === 'done') conn.className = 'step-connector done';
     }
 
+    // ===== Confirm Checkbox =====
+    function toggleConfirm() {
+        const cb = document.getElementById('confirmCheckbox');
+        cb.checked = !cb.checked;
+        const section = document.getElementById('confirmSection');
+        section.classList.toggle('checked', cb.checked);
+        section.classList.remove('invalid-confirm');
+        updateProgress();
+    }
+
     // ===== Validation =====
     function validate() {
         let valid = true;
@@ -1174,6 +1346,12 @@
             }
         });
 
+        // Check confirmation
+        if (!document.getElementById('confirmCheckbox').checked) {
+            document.getElementById('confirmSection').classList.add('invalid-confirm');
+            valid = false;
+        }
+
         if (clientPad.isEmpty()) {
             document.getElementById('clientSigWrapper').style.borderColor = 'var(--error)';
             valid = false;
@@ -1182,7 +1360,14 @@
         }
 
         if (!valid) {
-            showToast('יש למלא את כל השדות המסומנים ולחתום', 'error');
+            // Scroll to first problem
+            const firstInvalid = document.querySelector('.editable-field.invalid') ||
+                                 ((!document.getElementById('confirmCheckbox').checked) ? document.getElementById('confirmSection') : null) ||
+                                 (clientPad.isEmpty() ? document.getElementById('clientSigWrapper') : null);
+            if (firstInvalid) {
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            showToast('יש למלא את כל השדות, לאשר את ההסכם ולחתום', 'error');
         }
 
         return valid;
@@ -1309,12 +1494,23 @@
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('contractDate').value = today;
 
-        // Listen for field changes
+        // Listen for field changes + valid feedback
         document.querySelectorAll('.editable-field').forEach(field => {
             field.addEventListener('input', () => {
                 field.classList.remove('invalid');
+                if (field.value.trim()) {
+                    field.classList.add('valid');
+                } else {
+                    field.classList.remove('valid');
+                }
                 updateProgress();
             });
+        });
+
+        // Back to top button visibility
+        const backBtn = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            backBtn.classList.toggle('visible', window.scrollY > 600);
         });
 
         updateProgress();
