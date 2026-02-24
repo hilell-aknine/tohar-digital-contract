@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>הסכם שירות - טוהר אקנין</title>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- PDF via browser print - native Hebrew support -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=David+Libre:wght@400;500;700&family=Heebo:wght@300;400;500;600;700&display=swap');
 
@@ -595,32 +595,32 @@
             display: none;
         }
 
-        /* PDF rendering fix for Hebrew text */
-        .pdf-rendering * {
-            word-spacing: 0.05em !important;
-            letter-spacing: 0.02em !important;
-            text-rendering: geometricPrecision !important;
-            -webkit-font-smoothing: antialiased !important;
-        }
-        .pdf-rendering .contract-text,
-        .pdf-rendering .contract-list li,
-        .pdf-rendering .party-detail,
-        .pdf-rendering .highlight-box,
-        .pdf-rendering p,
-        .pdf-rendering span,
-        .pdf-rendering label {
-            white-space: pre-wrap !important;
-            word-break: normal !important;
-            overflow-wrap: break-word !important;
-        }
-
         /* Print / PDF styles */
         @media print {
-            .top-bar, .progress-bar, .actions-bar, .clear-sig, .sig-placeholder { display: none !important; }
+            body {
+                background: white;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .top-bar, .progress-bar, .actions-bar, .clear-sig, .sig-placeholder, .toast { display: none !important; }
             .contract-wrapper { padding: 0; max-width: 100%; }
-            .contract-page { box-shadow: none; border: none; padding: 20px; margin: 0; }
-            .editable-field { border-bottom-style: solid; border-bottom-color: #999; }
+            .contract-page {
+                box-shadow: none;
+                border: none;
+                padding: 30px 40px;
+                margin: 0;
+                border-radius: 0;
+            }
+            .editable-field {
+                border: none !important;
+                border-bottom: 1.5px solid #999 !important;
+                background: transparent !important;
+            }
             .watermark { display: block; text-align: center; margin-top: 30px; font-size: 0.75rem; color: #aaa; }
+            .contract-header { padding-bottom: 20px; margin-bottom: 20px; }
+            .highlight-box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .price-tag { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .signature-canvas-wrapper { border: 1.5px solid #ccc !important; border-style: solid !important; }
         }
 
         /* Responsive */
@@ -1021,13 +1021,9 @@
 
 <!-- Actions Bar -->
 <div class="actions-bar">
-    <button class="btn btn-outline" onclick="previewPDF()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        תצוגה מקדימה
-    </button>
     <button class="btn btn-primary" onclick="generatePDF()" id="btnGenerate">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        הפקת PDF חתום
+        שמירה כ-PDF
     </button>
     <button class="btn btn-success" onclick="showSendModal()" id="btnSend" disabled>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
@@ -1192,80 +1188,33 @@
         return valid;
     }
 
-    // ===== PDF Generation =====
-    async function generatePDF() {
+    // ===== PDF Generation (browser print - perfect Hebrew) =====
+    function generatePDF() {
         if (!validate()) return;
-
-        const btn = document.getElementById('btnGenerate');
-        btn.classList.add('loading');
-        btn.disabled = true;
-
-        const element = document.getElementById('contractContent');
-        const clientName = document.getElementById('clientName').value.trim();
 
         // Set timestamp
         const now = new Date();
         document.getElementById('signedTimestamp').textContent =
             'נחתם דיגיטלית בתאריך ' + now.toLocaleDateString('he-IL') + ' בשעה ' + now.toLocaleTimeString('he-IL');
 
-        // Prepare DOM for PDF
-        element.classList.add('pdf-rendering');
+        // Show watermark for print
         document.querySelectorAll('.watermark').forEach(el => el.style.display = 'block');
-        document.querySelectorAll('.clear-sig, .sig-placeholder').forEach(el => el.style.display = 'none');
-        document.querySelectorAll('.editable-field').forEach(el => {
-            el.style.borderBottomStyle = 'solid';
-            el.style.borderBottomColor = '#999';
-        });
 
-        // Force layout recalc before capture
-        await new Promise(r => setTimeout(r, 100));
+        // Print (user saves as PDF from print dialog)
+        window.print();
 
-        try {
-            const opt = {
-                margin: [10, 10, 10, 10],
-                filename: `הסכם-שירות-${clientName}-טוהר-אקנין.pdf`,
-                image: { type: 'png', quality: 1 },
-                html2canvas: {
-                    scale: 3,
-                    useCORS: true,
-                    letterRendering: true,
-                    scrollY: 0,
-                    windowWidth: 800,
-                    logging: false,
-                    removeContainer: true,
-                },
-                jsPDF: {
-                    unit: 'mm',
-                    format: 'a4',
-                    orientation: 'portrait',
-                    compress: true
-                },
-                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-            };
-
-            generatedPDFBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
-
-            setStep(4, 'done');
-            document.getElementById('conn3').className = 'step-connector done';
-            document.getElementById('btnSend').disabled = false;
-
-            showToast('PDF נוצר בהצלחה! ניתן לשלוח את ההעתקים', 'success');
-        } catch (err) {
-            showToast('שגיאה ביצירת PDF: ' + err.message, 'error');
-        } finally {
-            // Restore UI
-            element.classList.remove('pdf-rendering');
+        // Restore watermark after print
+        setTimeout(() => {
             document.querySelectorAll('.watermark').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.clear-sig').forEach(el => el.style.display = '');
-            document.querySelectorAll('.sig-placeholder').forEach(el => el.style.display = '');
-            document.querySelectorAll('.editable-field').forEach(el => {
-                el.style.borderBottomStyle = '';
-                el.style.borderBottomColor = '';
-            });
+        }, 1000);
 
-            btn.classList.remove('loading');
-            btn.disabled = false;
-        }
+        // Mark step done
+        setStep(4, 'done');
+        document.getElementById('conn3').className = 'step-connector done';
+        document.getElementById('btnSend').disabled = false;
+        generatedPDFBlob = true; // flag that PDF was generated
+
+        showToast('שמור כ-PDF מתוך חלון ההדפסה', 'success');
     }
 
     function previewPDF() {
@@ -1273,18 +1222,16 @@
     }
 
     function downloadPDF() {
-        if (!generatedPDFBlob) {
-            showToast('יש ליצור PDF קודם', 'error');
-            return;
-        }
-        const clientName = document.getElementById('clientName').value.trim() || 'לקוח';
-        const url = URL.createObjectURL(generatedPDFBlob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `הסכם-שירות-${clientName}-טוהר-אקנין.pdf`;
-        a.click();
-        URL.revokeObjectURL(url);
-        showToast('PDF הורד בהצלחה', 'success');
+        // Set timestamp
+        const now = new Date();
+        document.getElementById('signedTimestamp').textContent =
+            'נחתם דיגיטלית בתאריך ' + now.toLocaleDateString('he-IL') + ' בשעה ' + now.toLocaleTimeString('he-IL');
+        document.querySelectorAll('.watermark').forEach(el => el.style.display = 'block');
+        window.print();
+        setTimeout(() => {
+            document.querySelectorAll('.watermark').forEach(el => el.style.display = 'none');
+        }, 1000);
+        showToast('שמור כ-PDF מתוך חלון ההדפסה', 'success');
     }
 
     // ===== Send Functions =====
@@ -1304,10 +1251,6 @@
         const clientPhone = document.getElementById('clientPhone').value.trim().replace(/[^0-9]/g, '');
         const clientName = document.getElementById('clientName').value.trim();
 
-        // First download the PDF
-        downloadPDF();
-
-        // Open WhatsApp for client
         const clientMsg = encodeURIComponent(
             `שלום ${clientName},\nמצורף הסכם השירות החתום.\nתודה רבה!\nטוהר אקנין`
         );
@@ -1317,20 +1260,17 @@
             waPhone = '972' + waPhone.substring(1);
         }
 
-        // Open WhatsApp for the client
-        setTimeout(() => {
-            window.open(`https://wa.me/${waPhone}?text=${clientMsg}`, '_blank');
-        }, 1000);
+        window.open(`https://wa.me/${waPhone}?text=${clientMsg}`, '_blank');
 
-        // Also open for Hillel
+        // Also open for Tohar
         setTimeout(() => {
-            const hillelMsg = encodeURIComponent(
+            const toharMsg = encodeURIComponent(
                 `העתק הסכם שירות חתום - ${clientName}\nתאריך: ${new Date().toLocaleDateString('he-IL')}`
             );
-            window.open(`https://wa.me/972549116092?text=${hillelMsg}`, '_blank');
-        }, 2500);
+            window.open(`https://wa.me/972547471300?text=${toharMsg}`, '_blank');
+        }, 1500);
 
-        showToast('הורד את ה-PDF וצרף אותו בוואטסאפ', 'success');
+        showToast('צרף את ה-PDF ששמרת להודעה בוואטסאפ', 'success');
         closeSendModal();
     }
 
@@ -1339,10 +1279,6 @@
         const clientName = document.getElementById('clientName').value.trim();
         const providerEmail = 'toharAknine.Business@gmail.com';
 
-        // Download PDF first
-        downloadPDF();
-
-        // Open email client
         const subject = encodeURIComponent(`הסכם שירות חתום - ${clientName} & טוהר אקנין`);
         const body = encodeURIComponent(
             `שלום,\n\nמצורף הסכם השירות החתום בין ${clientName} לבין טוהר אקנין.\n\nנא לשמור העתק זה לתיעוד.\n\nבברכה,\nטוהר אקנין`
@@ -1351,7 +1287,7 @@
 
         window.open(`mailto:${to}?subject=${subject}&body=${body}`, '_blank');
 
-        showToast('דוא"ל נפתח - צרף את ה-PDF שהורד', 'success');
+        showToast('צרף את ה-PDF ששמרת למייל', 'success');
         closeSendModal();
     }
 
