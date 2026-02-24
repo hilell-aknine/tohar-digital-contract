@@ -595,6 +595,25 @@
             display: none;
         }
 
+        /* PDF rendering fix for Hebrew text */
+        .pdf-rendering * {
+            word-spacing: 0.05em !important;
+            letter-spacing: 0.02em !important;
+            text-rendering: geometricPrecision !important;
+            -webkit-font-smoothing: antialiased !important;
+        }
+        .pdf-rendering .contract-text,
+        .pdf-rendering .contract-list li,
+        .pdf-rendering .party-detail,
+        .pdf-rendering .highlight-box,
+        .pdf-rendering p,
+        .pdf-rendering span,
+        .pdf-rendering label {
+            white-space: pre-wrap !important;
+            word-break: normal !important;
+            overflow-wrap: break-word !important;
+        }
+
         /* Print / PDF styles */
         @media print {
             .top-bar, .progress-bar, .actions-bar, .clear-sig, .sig-placeholder { display: none !important; }
@@ -1181,42 +1200,47 @@
         btn.classList.add('loading');
         btn.disabled = true;
 
+        const element = document.getElementById('contractContent');
+        const clientName = document.getElementById('clientName').value.trim();
+
         // Set timestamp
         const now = new Date();
         document.getElementById('signedTimestamp').textContent =
             'נחתם דיגיטלית בתאריך ' + now.toLocaleDateString('he-IL') + ' בשעה ' + now.toLocaleTimeString('he-IL');
 
-        // Show watermark for PDF
+        // Prepare DOM for PDF
+        element.classList.add('pdf-rendering');
         document.querySelectorAll('.watermark').forEach(el => el.style.display = 'block');
-
-        // Hide action elements
         document.querySelectorAll('.clear-sig, .sig-placeholder').forEach(el => el.style.display = 'none');
-
-        // Make fields look like plain text for PDF
         document.querySelectorAll('.editable-field').forEach(el => {
             el.style.borderBottomStyle = 'solid';
             el.style.borderBottomColor = '#999';
         });
 
-        try {
-            const element = document.getElementById('contractContent');
-            const clientName = document.getElementById('clientName').value.trim();
+        // Force layout recalc before capture
+        await new Promise(r => setTimeout(r, 100));
 
+        try {
             const opt = {
                 margin: [10, 10, 10, 10],
                 filename: `הסכם-שירות-${clientName}-טוהר-אקנין.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
+                image: { type: 'png', quality: 1 },
                 html2canvas: {
-                    scale: 2,
+                    scale: 3,
                     useCORS: true,
                     letterRendering: true,
                     scrollY: 0,
+                    windowWidth: 800,
+                    logging: false,
+                    removeContainer: true,
                 },
                 jsPDF: {
                     unit: 'mm',
                     format: 'a4',
-                    orientation: 'portrait'
-                }
+                    orientation: 'portrait',
+                    compress: true
+                },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
             };
 
             generatedPDFBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
@@ -1230,6 +1254,7 @@
             showToast('שגיאה ביצירת PDF: ' + err.message, 'error');
         } finally {
             // Restore UI
+            element.classList.remove('pdf-rendering');
             document.querySelectorAll('.watermark').forEach(el => el.style.display = 'none');
             document.querySelectorAll('.clear-sig').forEach(el => el.style.display = '');
             document.querySelectorAll('.sig-placeholder').forEach(el => el.style.display = '');
