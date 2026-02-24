@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>הסכם שירות - טוהר אקנין</title>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=David+Libre:wght@400;500;700&family=Heebo:wght@300;400;500;600;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #1a1a1a;
+            --primary-light: #333333;
+            --burgundy: #8C4460;
+            --burgundy-light: #C4879E;
+            --burgundy-soft: #f3e8ed;
+            --bg: #fafafa;
+            --text: #1a1a1a;
+            --border: #e0e0e0;
+            --white: #ffffff;
+            --success: #2e7d32;
+            --error: #9B2335;
+        }
+
+        body {
+            font-family: 'Heebo', 'David Libre', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+        }
+
+        .top-bar h1 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .top-bar .badge {
+            background: var(--burgundy);
+            color: var(--white);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        /* Progress Steps */
+        .progress-bar {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 20px 24px;
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #999;
+            transition: all 0.3s;
+        }
+
+        .step-indicator.active {
+            color: var(--burgundy);
+            font-weight: 600;
+        }
+
+        .step-indicator.done {
+            color: var(--primary);
+        }
+
+        .step-indicator .num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border: 2px solid #ddd;
+            transition: all 0.3s;
+        }
+
+        .step-indicator.active .num {
+            background: var(--burgundy);
+            color: white;
+            border-color: var(--burgundy);
+        }
+
+        .step-indicator.done .num {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .step-connector {
+            width: 40px;
+            height: 2px;
+            background: #ddd;
+            align-self: center;
+        }
+
+        .step-connector.done {
+            background: var(--primary);
+        }
+
+        /* Contract Container */
+        .contract-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .contract-page {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+            padding: 48px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+
+        /* Contract Header */
+        .contract-header {
+            text-align: center;
+            padding-bottom: 30px;
+            border-bottom: 3px double var(--burgundy-light);
+            margin-bottom: 30px;
+        }
+
+        .contract-header .logo-area {
+            margin-bottom: 16px;
+        }
+
+        .contract-header .logo-area .initials {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'David Libre', serif;
+            margin-bottom: 8px;
+        }
+
+        .contract-header h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'David Libre', serif;
+        }
+
+        .contract-header .subtitle {
+            color: #777;
+            font-size: 0.95rem;
+            margin-top: 4px;
+        }
+
+        /* Sections */
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 28px 0 14px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid var(--burgundy-light);
+            display: inline-block;
+        }
+
+        .contract-text {
+            font-size: 0.95rem;
+            line-height: 2;
+            color: #333;
+        }
+
+        .contract-text p {
+            margin-bottom: 8px;
+        }
+
+        /* Parties Box */
+        .parties-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin: 20px 0;
+        }
+
+        .party-box {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            background: #fafafa;
+        }
+
+        .party-box.provider {
+            border-right: 3px solid var(--primary);
+        }
+
+        .party-box.client {
+            border-right: 3px solid var(--burgundy);
+        }
+
+        .party-box h4 {
+            font-size: 0.9rem;
+            color: var(--burgundy);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .party-detail {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .party-detail label {
+            font-weight: 500;
+            min-width: 55px;
+            color: #666;
+        }
+
+        .party-detail span {
+            color: var(--text);
+        }
+
+        /* Editable Fields */
+        .editable-field {
+            border: none;
+            border-bottom: 1.5px dashed var(--burgundy-light);
+            background: transparent;
+            font-family: inherit;
+            font-size: 0.9rem;
+            padding: 2px 8px;
+            color: var(--primary);
+            direction: rtl;
+            min-width: 160px;
+            transition: all 0.2s;
+        }
+
+        .editable-field:focus {
+            outline: none;
+            border-bottom-color: var(--burgundy);
+            background: rgba(140,68,96,0.03);
+        }
+
+        .editable-field::placeholder {
+            color: #bbb;
+            font-style: italic;
+        }
+
+        .date-field {
+            min-width: 140px;
+        }
+
+        /* Highlights */
+        .highlight-box {
+            background: var(--burgundy-soft);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 12px 0;
+            border-right: 3px solid var(--burgundy);
+        }
+
+        .price-tag {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 2px 12px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+
+        /* Bullet List */
+        .contract-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .contract-list li {
+            position: relative;
+            padding-right: 22px;
+            margin-bottom: 6px;
+            font-size: 0.93rem;
+            color: #333;
+        }
+
+        .contract-list li::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 10px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--burgundy-light);
+        }
+
+        /* Signature Area */
+        .signatures-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid var(--border);
+        }
+
+        .signatures-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-top: 20px;
+        }
+
+        .signature-block {
+            text-align: center;
+        }
+
+        .signature-block h4 {
+            font-size: 0.95rem;
+            color: var(--burgundy);
+            margin-bottom: 10px;
+        }
+
+        .signature-canvas-wrapper {
+            position: relative;
+            border: 2px dashed var(--border);
+            border-radius: 10px;
+            background: #fefefe;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+
+        .signature-canvas-wrapper:hover,
+        .signature-canvas-wrapper.signing {
+            border-color: var(--burgundy);
+        }
+
+        .signature-canvas-wrapper canvas {
+            width: 100%;
+            height: 150px;
+            cursor: crosshair;
+        }
+
+        .sig-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ccc;
+            font-size: 0.85rem;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .signature-canvas-wrapper.has-sig .sig-placeholder {
+            opacity: 0;
+        }
+
+        .clear-sig {
+            background: none;
+            border: none;
+            color: var(--error);
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 6px;
+            font-family: inherit;
+            padding: 4px 8px;
+        }
+
+        .clear-sig:hover {
+            text-decoration: underline;
+        }
+
+        .sig-name-date {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: #999;
+            padding: 0 4px;
+        }
+
+        /* Actions Bar */
+        .actions-bar {
+            background: var(--white);
+            border-top: 1px solid var(--border);
+            padding: 16px 24px;
+            position: sticky;
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            z-index: 100;
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border-radius: 8px;
+            border: none;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26,26,26,0.3);
+        }
+
+        .btn-burgundy {
+            background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-light) 100%);
+            color: var(--white);
+        }
+
+        .btn-burgundy:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(140,68,96,0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-outline:hover:not(:disabled) {
+            border-color: var(--burgundy);
+            color: var(--burgundy);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--burgundy) 0%, #a05575 100%);
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(140,68,96,0.3);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: var(--primary);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--error); }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .modal h3 {
+            font-size: 1.3rem;
+            color: var(--burgundy);
+            margin-bottom: 12px;
+        }
+
+        .modal p {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .modal .icon-success {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: var(--burgundy-soft);
+            color: var(--burgundy);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+        }
+
+        .modal .send-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .modal .send-option-btn {
+            padding: 14px 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--white);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .modal .send-option-btn:hover {
+            border-color: var(--burgundy);
+            background: var(--burgundy-soft);
+        }
+
+        .modal .send-option-btn .icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .modal .send-option-btn .icon.wa { background: #f0f0f0; }
+        .modal .send-option-btn .icon.email { background: var(--burgundy-soft); }
+        .modal .send-option-btn .icon.download { background: #f5f5f5; }
+
+        /* Watermark for PDF */
+        .watermark {
+            display: none;
+        }
+
+        /* Print / PDF styles */
+        @media print {
+            .top-bar, .progress-bar, .actions-bar, .clear-sig, .sig-placeholder { display: none !important; }
+            .contract-wrapper { padding: 0; max-width: 100%; }
+            .contract-page { box-shadow: none; border: none; padding: 20px; margin: 0; }
+            .editable-field { border-bottom-style: solid; border-bottom-color: #999; }
+            .watermark { display: block; text-align: center; margin-top: 30px; font-size: 0.75rem; color: #aaa; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .contract-page { padding: 24px 20px; }
+            .parties-grid, .signatures-grid { grid-template-columns: 1fr; }
+            .contract-header h2 { font-size: 1.3rem; }
+            .actions-bar { flex-wrap: wrap; }
+            .btn { flex: 1; min-width: 140px; justify-content: center; }
+        }
+
+        /* Loading animation on buttons */
+        .btn.loading {
+            position: relative;
+            color: transparent;
+        }
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Validation */
+        .editable-field.invalid {
+            border-bottom-color: var(--error);
+            background: rgba(198,40,40,0.03);
+        }
+
+        .required-mark {
+            color: var(--error);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="top-bar">
+    <h1>הסכם שירות - טוהר אקנין</h1>
+    <span class="badge">מסמך דיגיטלי</span>
+</div>
+
+<!-- Progress -->
+<div class="progress-bar">
+    <div class="step-indicator active" id="step1">
+        <span class="num">1</span>
+        <span>קריאת ההסכם</span>
+    </div>
+    <div class="step-connector" id="conn1"></div>
+    <div class="step-indicator" id="step2">
+        <span class="num">2</span>
+        <span>מילוי פרטים</span>
+    </div>
+    <div class="step-connector" id="conn2"></div>
+    <div class="step-indicator" id="step3">
+        <span class="num">3</span>
+        <span>חתימה</span>
+    </div>
+    <div class="step-connector" id="conn3"></div>
+    <div class="step-indicator" id="step4">
+        <span class="num">4</span>
+        <span>שליחה</span>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Contract -->
+<div class="contract-wrapper" id="contractContent">
+    <div class="contract-page">
+
+        <!-- Header -->
+        <div class="contract-header">
+            <div class="logo-area">
+                <div class="initials">ט.א</div>
+            </div>
+            <h2>הסכם שירות ליווי הפקת סרטונים שיווקיים</h2>
+            <div class="subtitle">מסמך מחייב משפטית</div>
+        </div>
+
+        <!-- Date -->
+        <div style="text-align: center; margin-bottom: 24px; font-size: 0.95rem;">
+            הסכם זה נעשה ביום
+            <input type="date" class="editable-field date-field" id="contractDate" required>
+            בין הצדדים המפורטים להלן:
+        </div>
+
+        <!-- Parties -->
+        <div class="parties-grid">
+            <div class="party-box provider">
+                <h4>נותנת השירות</h4>
+                <div class="party-detail">
+                    <label>שם העסק:</label>
+                    <span>טוהר אקנין</span>
+                </div>
+                <div class="party-detail">
+                    <label>כתובת:</label>
+                    <span>אלעזר גוש קטיף 17</span>
+                </div>
+                <div class="party-detail">
+                    <label>טלפון:</label>
+                    <span>054-747-1300</span>
+                </div>
+                <div class="party-detail">
+                    <label>דוא"ל:</label>
+                    <span>toharAknine.Business@gmail.com</span>
+                </div>
+            </div>
+            <div class="party-box client">
+                <h4>הלקוח/ה <span class="required-mark">*</span></h4>
+                <div class="party-detail">
+                    <label>שם:</label>
+                    <input type="text" class="editable-field" id="clientName" placeholder="שם מלא" required>
+                </div>
+                <div class="party-detail">
+                    <label>כתובת:</label>
+                    <input type="text" class="editable-field" id="clientAddress" placeholder="כתובת" required>
+                </div>
+                <div class="party-detail">
+                    <label>טלפון:</label>
+                    <input type="tel" class="editable-field" id="clientPhone" placeholder="050-000-0000" required>
+                </div>
+                <div class="party-detail">
+                    <label>דוא"ל:</label>
+                    <input type="email" class="editable-field" id="clientEmail" placeholder="email@example.com" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Sections -->
+        <h3 class="section-title">מהות השירות</h3>
+        <div class="contract-text">
+            <p>השירות כולל פגישת איפיון ואסטרטגיה + סרטונים שיווקיים, הכולל <strong>10 סרטוני תוכן</strong>.</p>
+            <p>מטרת השירות היא להקנות ללקוח/ה את הידע והכלים הנדרשים על מנת לסייע להם לקדם את העסק ולהשיג תוצאות חיוביות בשיווק העסק.</p>
+        </div>
+
+        <h3 class="section-title">תנאי תשלום</h3>
+        <div class="contract-text">
+            <div class="highlight-box">
+                <p>עלות השירות הכוללת: <span class="price-tag">4,200 &#8362;</span></p>
+            </div>
+            <ul class="contract-list">
+                <li>תשלום מקדמה בסך <strong>500 &#8362;</strong> ישולם במעמד החתימה על ההסכם.</li>
+                <li>יתרת התשלום בסך <strong>3,700 &#8362;</strong> תוסדר לפני מועד יום הצילום או בהתאם להסכמות בין הצדדים.</li>
+            </ul>
+        </div>
+
+        <h3 class="section-title">מדיניות ביטולים</h3>
+        <div class="contract-text">
+            <ul class="contract-list">
+                <li>ביטול עד 14 ימים לפני תחילת התוכנית יזכה את הלקוח/ה בהחזר של 50% מהמקדמה.</li>
+                <li>ביטול בתוך 14 הימים שלפני תחילת התוכנית לא יזכה בהחזר על המקדמה.</li>
+                <li>ביטול לאחר תחילת התוכנית לא יזכה בהחזר כספי כלל.</li>
+            </ul>
+        </div>
+
+        <h3 class="section-title">זמינות ותמיכה</h3>
+        <div class="contract-text">
+            <p>התקשורת עם הלקוח/ה תתנהל באמצעות WhatsApp ומענה טלפוני במהלך שעות העבודה המקובלות. תשובות תינתנה בתוך זמן סביר.</p>
+            <p>עד <strong>4 תיקוני סרטונים</strong>.</p>
+        </div>
+
+        <h3 class="section-title">התחייבות המלווה</h3>
+        <div class="contract-text">
+            <p>המלווה מתחייבת לספק את הידע והכלים הנדרשים לשם קידום העסק והשגת תוצאות חיוביות. הצלחת התהליך תלויה במידת ההתמדה וההשקעה של הלקוח/ה ביישום הכלים וההנחיות שיתקבלו.</p>
+            <p>שליחת סרטונים ערוכים עד <strong>14 ימי עסקים</strong>.</p>
+        </div>
+
+        <h3 class="section-title">התחייבות הלקוח/ה</h3>
+        <div class="contract-text">
+            <p>הלקוח/ה מתחייבים לשתף פעולה באופן מלא בתהליך הליווי ולהקדיש את הזמן והמאמץ הנדרשים על מנת להפיק את המירב מהשירות.</p>
+        </div>
+
+        <h3 class="section-title">הגבלת אחריות</h3>
+        <div class="contract-text">
+            <p>המלווה אינה מתחייבת לתוצאות מסוימות, אלא להעברת הידע והכלים הנדרשים לקידום העסק. הצלחת התהליך תלויה במידת ההשקעה של הלקוח/ה וביישום ההנחיות.</p>
+        </div>
+
+        <h3 class="section-title">סודיות</h3>
+        <div class="contract-text">
+            <p>הצדדים מתחייבים לשמור על סודיות המידע שיתפרסם במהלך תהליך הליווי ולהימנע מחשיפת המידע לכל גורם שלישי, פרט למקרים בהם נדרש לפי החוק.</p>
+        </div>
+
+        <h3 class="section-title">שונות</h3>
+        <div class="contract-text">
+            <p>כל שינוי או תוספת להסכם זה יוחתמו ויאשרו על ידי שני הצדדים.</p>
+            <p>החוזה אינו יוצר יחסי עובד-מעביד בין הצדדים.</p>
+        </div>
+
+        <!-- Signatures -->
+        <div class="signatures-section">
+            <h3 class="section-title">חתימות</h3>
+
+            <div class="signatures-grid">
+                <!-- Client Signature -->
+                <div class="signature-block">
+                    <h4>חתימת הלקוח/ה <span class="required-mark">*</span></h4>
+                    <div class="signature-canvas-wrapper" id="clientSigWrapper">
+                        <canvas id="clientSigCanvas"></canvas>
+                        <div class="sig-placeholder">חתמ/י כאן</div>
+                    </div>
+                    <button class="clear-sig" onclick="clearSignature('client')">נקה חתימה</button>
+                    <div class="sig-name-date">
+                        <span id="clientSigName">שם: ---</span>
+                        <span id="clientSigDate">תאריך: ---</span>
+                    </div>
+                </div>
+
+                <!-- Provider Signature -->
+                <div class="signature-block">
+                    <h4>חתימת נותנת השירות</h4>
+                    <div class="signature-canvas-wrapper" id="providerSigWrapper">
+                        <canvas id="providerSigCanvas"></canvas>
+                        <div class="sig-placeholder">חתימת טוהר אקנין</div>
+                    </div>
+                    <button class="clear-sig" onclick="clearSignature('provider')">נקה חתימה</button>
+                    <div class="sig-name-date">
+                        <span>שם: טוהר אקנין</span>
+                        <span id="providerSigDate">תאריך: ---</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Watermark (visible in PDF only) -->
+        <div class="watermark">
+            <p>מסמך זה נחתם דיגיטלית | נוצר באמצעות מערכת החתימות הדיגיטליות של טוהר אקנין</p>
+            <p id="signedTimestamp"></p>
+        </div>
+    </div>
+</div>
+
+<!-- Actions Bar -->
+<div class="actions-bar">
+    <button class="btn btn-outline" onclick="previewPDF()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        תצוגה מקדימה
+    </button>
+    <button class="btn btn-primary" onclick="generatePDF()" id="btnGenerate">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        הפקת PDF חתום
+    </button>
+    <button class="btn btn-success" onclick="showSendModal()" id="btnSend" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        שלח העתקים
+    </button>
+</div>
+
+<!-- Send Modal -->
+<div class="modal-overlay" id="sendModal">
+    <div class="modal">
+        <div class="icon-success">&#10003;</div>
+        <h3>ההסכם נחתם בהצלחה!</h3>
+        <p>כיצד תרצה לשלוח את ההעתקים?</p>
+        <div class="send-options">
+            <button class="send-option-btn" onclick="sendViaWhatsApp()">
+                <span class="icon wa">&#128172;</span>
+                <span>
+                    <strong>שלח בוואטסאפ</strong>
+                    <br><small style="color:#888">שליחת PDF ללקוח/ה ולך</small>
+                </span>
+            </button>
+            <button class="send-option-btn" onclick="sendViaEmail()">
+                <span class="icon email">&#9993;</span>
+                <span>
+                    <strong>שלח במייל</strong>
+                    <br><small style="color:#888">שליחה לדוא"ל של שני הצדדים</small>
+                </span>
+            </button>
+            <button class="send-option-btn" onclick="downloadPDF()">
+                <span class="icon download">&#128190;</span>
+                <span>
+                    <strong>הורד PDF</strong>
+                    <br><small style="color:#888">הורדת המסמך החתום למחשב</small>
+                </span>
+            </button>
+        </div>
+        <button class="btn btn-outline" style="margin-top: 16px; width: 100%; justify-content: center;" onclick="closeSendModal()">סגור</button>
+    </div>
+</div>
+
+<script>
+    // ===== Signature Pads =====
+    let clientPad, providerPad;
+    let generatedPDFBlob = null;
+
+    function initSignaturePads() {
+        const clientCanvas = document.getElementById('clientSigCanvas');
+        const providerCanvas = document.getElementById('providerSigCanvas');
+
+        // Size canvases
+        resizeCanvas(clientCanvas);
+        resizeCanvas(providerCanvas);
+
+        clientPad = new SignaturePad(clientCanvas, {
+            backgroundColor: 'rgba(255,255,255,0)',
+            penColor: '#1a1a1a',
+            minWidth: 1,
+            maxWidth: 2.5,
+        });
+
+        providerPad = new SignaturePad(providerCanvas, {
+            backgroundColor: 'rgba(255,255,255,0)',
+            penColor: '#1a1a1a',
+            minWidth: 1,
+            maxWidth: 2.5,
+        });
+
+        // Track signing
+        clientCanvas.addEventListener('pointerdown', () => {
+            document.getElementById('clientSigWrapper').classList.add('signing', 'has-sig');
+            updateProgress();
+        });
+
+        providerCanvas.addEventListener('pointerdown', () => {
+            document.getElementById('providerSigWrapper').classList.add('signing', 'has-sig');
+            updateProgress();
+        });
+
+        window.addEventListener('resize', () => {
+            // Save data before resize
+            const cData = clientPad.toData();
+            const pData = providerPad.toData();
+            resizeCanvas(clientCanvas);
+            resizeCanvas(providerCanvas);
+            clientPad.fromData(cData);
+            providerPad.fromData(pData);
+        });
+    }
+
+    function resizeCanvas(canvas) {
+        const wrapper = canvas.parentElement;
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = wrapper.offsetWidth * ratio;
+        canvas.height = 150 * ratio;
+        canvas.style.width = wrapper.offsetWidth + 'px';
+        canvas.style.height = '150px';
+        canvas.getContext('2d').scale(ratio, ratio);
+    }
+
+    function clearSignature(type) {
+        if (type === 'client') {
+            clientPad.clear();
+            document.getElementById('clientSigWrapper').classList.remove('has-sig', 'signing');
+        } else {
+            providerPad.clear();
+            document.getElementById('providerSigWrapper').classList.remove('has-sig', 'signing');
+        }
+        updateProgress();
+    }
+
+    // ===== Progress Tracking =====
+    function updateProgress() {
+        const hasDate = document.getElementById('contractDate').value;
+        const hasName = document.getElementById('clientName').value.trim();
+        const hasPhone = document.getElementById('clientPhone').value.trim();
+        const hasClientSig = !clientPad.isEmpty();
+
+        // Step 1: always done (reading)
+        setStep(1, 'done');
+
+        // Step 2: client details
+        if (hasName && hasPhone && hasDate) {
+            setStep(2, 'done');
+        } else if (hasName || hasPhone || hasDate) {
+            setStep(2, 'active');
+        }
+
+        // Step 3: signatures
+        if (hasClientSig) {
+            setStep(3, 'done');
+        } else if (document.getElementById('clientSigWrapper').classList.contains('signing')) {
+            setStep(3, 'active');
+        }
+
+        // Update sig name/date
+        if (hasName) {
+            document.getElementById('clientSigName').textContent = 'שם: ' + hasName;
+        }
+        if (hasDate) {
+            const d = new Date(hasDate);
+            const formatted = d.toLocaleDateString('he-IL');
+            document.getElementById('clientSigDate').textContent = 'תאריך: ' + formatted;
+            document.getElementById('providerSigDate').textContent = 'תאריך: ' + formatted;
+        }
+    }
+
+    function setStep(num, state) {
+        const step = document.getElementById('step' + num);
+        const conn = document.getElementById('conn' + (num - 1));
+        step.className = 'step-indicator ' + state;
+        if (conn && state === 'done') conn.className = 'step-connector done';
+    }
+
+    // ===== Validation =====
+    function validate() {
+        let valid = true;
+        const fields = [
+            { id: 'contractDate', name: 'תאריך' },
+            { id: 'clientName', name: 'שם הלקוח' },
+            { id: 'clientAddress', name: 'כתובת' },
+            { id: 'clientPhone', name: 'טלפון' },
+        ];
+
+        fields.forEach(f => {
+            const el = document.getElementById(f.id);
+            if (!el.value.trim()) {
+                el.classList.add('invalid');
+                valid = false;
+            } else {
+                el.classList.remove('invalid');
+            }
+        });
+
+        if (clientPad.isEmpty()) {
+            document.getElementById('clientSigWrapper').style.borderColor = 'var(--error)';
+            valid = false;
+        } else {
+            document.getElementById('clientSigWrapper').style.borderColor = '';
+        }
+
+        if (!valid) {
+            showToast('יש למלא את כל השדות המסומנים ולחתום', 'error');
+        }
+
+        return valid;
+    }
+
+    // ===== PDF Generation =====
+    async function generatePDF() {
+        if (!validate()) return;
+
+        const btn = document.getElementById('btnGenerate');
+        btn.classList.add('loading');
+        btn.disabled = true;
+
+        // Set timestamp
+        const now = new Date();
+        document.getElementById('signedTimestamp').textContent =
+            'נחתם דיגיטלית בתאריך ' + now.toLocaleDateString('he-IL') + ' בשעה ' + now.toLocaleTimeString('he-IL');
+
+        // Show watermark for PDF
+        document.querySelectorAll('.watermark').forEach(el => el.style.display = 'block');
+
+        // Hide action elements
+        document.querySelectorAll('.clear-sig, .sig-placeholder').forEach(el => el.style.display = 'none');
+
+        // Make fields look like plain text for PDF
+        document.querySelectorAll('.editable-field').forEach(el => {
+            el.style.borderBottomStyle = 'solid';
+            el.style.borderBottomColor = '#999';
+        });
+
+        try {
+            const element = document.getElementById('contractContent');
+            const clientName = document.getElementById('clientName').value.trim();
+
+            const opt = {
+                margin: [10, 10, 10, 10],
+                filename: `הסכם-שירות-${clientName}-טוהר-אקנין.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    letterRendering: true,
+                    scrollY: 0,
+                },
+                jsPDF: {
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'portrait'
+                }
+            };
+
+            generatedPDFBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+
+            setStep(4, 'done');
+            document.getElementById('conn3').className = 'step-connector done';
+            document.getElementById('btnSend').disabled = false;
+
+            showToast('PDF נוצר בהצלחה! ניתן לשלוח את ההעתקים', 'success');
+        } catch (err) {
+            showToast('שגיאה ביצירת PDF: ' + err.message, 'error');
+        } finally {
+            // Restore UI
+            document.querySelectorAll('.watermark').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.clear-sig').forEach(el => el.style.display = '');
+            document.querySelectorAll('.sig-placeholder').forEach(el => el.style.display = '');
+            document.querySelectorAll('.editable-field').forEach(el => {
+                el.style.borderBottomStyle = '';
+                el.style.borderBottomColor = '';
+            });
+
+            btn.classList.remove('loading');
+            btn.disabled = false;
+        }
+    }
+
+    function previewPDF() {
+        window.print();
+    }
+
+    function downloadPDF() {
+        if (!generatedPDFBlob) {
+            showToast('יש ליצור PDF קודם', 'error');
+            return;
+        }
+        const clientName = document.getElementById('clientName').value.trim() || 'לקוח';
+        const url = URL.createObjectURL(generatedPDFBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `הסכם-שירות-${clientName}-טוהר-אקנין.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('PDF הורד בהצלחה', 'success');
+    }
+
+    // ===== Send Functions =====
+    function showSendModal() {
+        if (!generatedPDFBlob) {
+            showToast('יש ליצור PDF קודם', 'error');
+            return;
+        }
+        document.getElementById('sendModal').classList.add('show');
+    }
+
+    function closeSendModal() {
+        document.getElementById('sendModal').classList.remove('show');
+    }
+
+    function sendViaWhatsApp() {
+        const clientPhone = document.getElementById('clientPhone').value.trim().replace(/[^0-9]/g, '');
+        const clientName = document.getElementById('clientName').value.trim();
+
+        // First download the PDF
+        downloadPDF();
+
+        // Open WhatsApp for client
+        const clientMsg = encodeURIComponent(
+            `שלום ${clientName},\nמצורף הסכם השירות החתום.\nתודה רבה!\nטוהר אקנין`
+        );
+
+        let waPhone = clientPhone;
+        if (waPhone.startsWith('0')) {
+            waPhone = '972' + waPhone.substring(1);
+        }
+
+        // Open WhatsApp for the client
+        setTimeout(() => {
+            window.open(`https://wa.me/${waPhone}?text=${clientMsg}`, '_blank');
+        }, 1000);
+
+        // Also open for Hillel
+        setTimeout(() => {
+            const hillelMsg = encodeURIComponent(
+                `העתק הסכם שירות חתום - ${clientName}\nתאריך: ${new Date().toLocaleDateString('he-IL')}`
+            );
+            window.open(`https://wa.me/972549116092?text=${hillelMsg}`, '_blank');
+        }, 2500);
+
+        showToast('הורד את ה-PDF וצרף אותו בוואטסאפ', 'success');
+        closeSendModal();
+    }
+
+    function sendViaEmail() {
+        const clientEmail = document.getElementById('clientEmail').value.trim();
+        const clientName = document.getElementById('clientName').value.trim();
+        const providerEmail = 'toharAknine.Business@gmail.com';
+
+        // Download PDF first
+        downloadPDF();
+
+        // Open email client
+        const subject = encodeURIComponent(`הסכם שירות חתום - ${clientName} & טוהר אקנין`);
+        const body = encodeURIComponent(
+            `שלום,\n\nמצורף הסכם השירות החתום בין ${clientName} לבין טוהר אקנין.\n\nנא לשמור העתק זה לתיעוד.\n\nבברכה,\nטוהר אקנין`
+        );
+        const to = `${clientEmail},${providerEmail}`;
+
+        window.open(`mailto:${to}?subject=${subject}&body=${body}`, '_blank');
+
+        showToast('דוא"ל נפתח - צרף את ה-PDF שהורד', 'success');
+        closeSendModal();
+    }
+
+    // ===== Toast =====
+    function showToast(msg, type = '') {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.className = 'toast show ' + type;
+        setTimeout(() => {
+            toast.className = 'toast';
+        }, 3500);
+    }
+
+    // ===== Init =====
+    document.addEventListener('DOMContentLoaded', () => {
+        initSignaturePads();
+
+        // Set today as default date
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('contractDate').value = today;
+
+        // Listen for field changes
+        document.querySelectorAll('.editable-field').forEach(field => {
+            field.addEventListener('input', () => {
+                field.classList.remove('invalid');
+                updateProgress();
+            });
+        });
+
+        updateProgress();
+    });
+</script>
+
+</body>
+</html>
