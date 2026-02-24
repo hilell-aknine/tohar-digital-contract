@@ -10,6 +10,7 @@
         @import url('https://fonts.googleapis.com/css2?family=David+Libre:wght@400;500;700&family=Heebo:wght@300;400;500;600;700&display=swap');
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
         :root {
             --primary: #1a1a1a;
@@ -175,12 +176,6 @@
             font-family: 'David Libre', serif;
         }
 
-        .contract-header .subtitle {
-            color: #777;
-            font-size: 0.95rem;
-            margin-top: 4px;
-        }
-
         /* Sections */
         .section-title {
             font-size: 1.15rem;
@@ -330,11 +325,9 @@
             border-top: 2px solid var(--border);
         }
 
-        .signatures-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 32px;
-            margin-top: 20px;
+        .signature-single {
+            max-width: 400px;
+            margin: 20px auto 0;
         }
 
         .signature-block {
@@ -365,6 +358,7 @@
             width: 100%;
             height: 150px;
             cursor: crosshair;
+            touch-action: none;
         }
 
         .sig-placeholder {
@@ -612,11 +606,185 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            .contract-page { padding: 24px 20px; }
-            .parties-grid, .signatures-grid { grid-template-columns: 1fr; }
-            .contract-header h2 { font-size: 1.3rem; }
-            .actions-bar { flex-wrap: wrap; }
-            .btn { flex: 1; min-width: 140px; justify-content: center; }
+            .top-bar {
+                padding: 12px 16px;
+            }
+            .top-bar h1 {
+                font-size: 1rem;
+            }
+            .top-bar .badge {
+                font-size: 0.7rem;
+                padding: 3px 10px;
+            }
+
+            .progress-bar {
+                padding: 14px 12px;
+                gap: 4px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .step-indicator {
+                font-size: 0.75rem;
+                gap: 4px;
+                white-space: nowrap;
+            }
+            .step-indicator .num {
+                width: 24px;
+                height: 24px;
+                font-size: 0.7rem;
+                flex-shrink: 0;
+            }
+            .step-connector {
+                width: 20px;
+                min-width: 20px;
+            }
+
+            .contract-wrapper {
+                padding: 12px;
+            }
+            .contract-page {
+                padding: 20px 16px;
+                border-radius: 10px;
+            }
+
+            .contract-header .logo-area .initials {
+                width: 52px;
+                height: 52px;
+                font-size: 1.2rem;
+            }
+            .contract-header h2 {
+                font-size: 1.15rem;
+                line-height: 1.5;
+            }
+
+            .parties-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .party-box {
+                padding: 16px;
+            }
+            .party-detail {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 2px;
+                margin-bottom: 12px;
+            }
+            .party-detail label {
+                font-size: 0.8rem;
+                min-width: unset;
+            }
+
+            .editable-field {
+                width: 100%;
+                min-width: unset;
+                font-size: 16px; /* prevents iOS zoom on focus */
+                padding: 8px 10px;
+                border-bottom-width: 2px;
+            }
+
+            .section-title {
+                font-size: 1.05rem;
+                margin: 22px 0 10px;
+            }
+
+            .contract-text {
+                font-size: 0.9rem;
+                line-height: 1.9;
+            }
+            .contract-list li {
+                font-size: 0.88rem;
+                padding-right: 20px;
+                margin-bottom: 8px;
+            }
+
+            .highlight-box {
+                padding: 14px 16px;
+            }
+            .price-tag {
+                font-size: 1rem;
+            }
+
+            .signatures-section {
+                margin-top: 28px;
+                padding-top: 20px;
+            }
+            .signature-single {
+                max-width: 100%;
+            }
+            .signature-canvas-wrapper canvas {
+                height: 180px;
+            }
+            .sig-placeholder {
+                font-size: 0.9rem;
+            }
+            .clear-sig {
+                font-size: 0.85rem;
+                padding: 8px 12px;
+            }
+
+            .actions-bar {
+                flex-direction: column;
+                padding: 12px 16px;
+                gap: 8px;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+                padding: 14px 20px;
+                font-size: 0.95rem;
+                min-width: unset;
+            }
+
+            .modal {
+                padding: 24px 20px;
+                border-radius: 14px;
+                margin: 16px;
+            }
+            .modal h3 {
+                font-size: 1.15rem;
+            }
+            .modal .icon-success {
+                width: 60px;
+                height: 60px;
+                font-size: 1.6rem;
+            }
+            .modal .send-option-btn {
+                padding: 14px 16px;
+            }
+
+            .toast {
+                top: auto;
+                bottom: 90px;
+                left: 16px;
+                right: 16px;
+                transform: translateY(20px);
+                text-align: center;
+                font-size: 0.88rem;
+                padding: 12px 20px;
+            }
+            .toast.show {
+                transform: translateY(0);
+            }
+
+            .date-field {
+                min-width: unset;
+                width: 100%;
+            }
+        }
+
+        /* Small phones */
+        @media (max-width: 380px) {
+            .step-indicator span:not(.num) {
+                display: none;
+            }
+            .contract-page {
+                padding: 16px 12px;
+            }
+            .contract-header h2 {
+                font-size: 1.05rem;
+            }
         }
 
         /* Loading animation on buttons */
@@ -692,7 +860,6 @@
                 <div class="initials">ט.א</div>
             </div>
             <h2>הסכם שירות ליווי הפקת סרטונים שיווקיים</h2>
-            <div class="subtitle">מסמך מחייב משפטית</div>
         </div>
 
         <!-- Date -->
@@ -808,7 +975,7 @@
         <div class="signatures-section">
             <h3 class="section-title">חתימות</h3>
 
-            <div class="signatures-grid">
+            <div class="signature-single">
                 <!-- Client Signature -->
                 <div class="signature-block">
                     <h4>חתימת הלקוח/ה <span class="required-mark">*</span></h4>
@@ -820,20 +987,6 @@
                     <div class="sig-name-date">
                         <span id="clientSigName">שם: ---</span>
                         <span id="clientSigDate">תאריך: ---</span>
-                    </div>
-                </div>
-
-                <!-- Provider Signature -->
-                <div class="signature-block">
-                    <h4>חתימת נותנת השירות</h4>
-                    <div class="signature-canvas-wrapper" id="providerSigWrapper">
-                        <canvas id="providerSigCanvas"></canvas>
-                        <div class="sig-placeholder">חתימת טוהר אקנין</div>
-                    </div>
-                    <button class="clear-sig" onclick="clearSignature('provider')">נקה חתימה</button>
-                    <div class="sig-name-date">
-                        <span>שם: טוהר אקנין</span>
-                        <span id="providerSigDate">תאריך: ---</span>
                     </div>
                 </div>
             </div>
@@ -898,25 +1051,15 @@
 
 <script>
     // ===== Signature Pads =====
-    let clientPad, providerPad;
+    let clientPad;
     let generatedPDFBlob = null;
 
     function initSignaturePads() {
         const clientCanvas = document.getElementById('clientSigCanvas');
-        const providerCanvas = document.getElementById('providerSigCanvas');
 
-        // Size canvases
         resizeCanvas(clientCanvas);
-        resizeCanvas(providerCanvas);
 
         clientPad = new SignaturePad(clientCanvas, {
-            backgroundColor: 'rgba(255,255,255,0)',
-            penColor: '#1a1a1a',
-            minWidth: 1,
-            maxWidth: 2.5,
-        });
-
-        providerPad = new SignaturePad(providerCanvas, {
             backgroundColor: 'rgba(255,255,255,0)',
             penColor: '#1a1a1a',
             minWidth: 1,
@@ -929,19 +1072,10 @@
             updateProgress();
         });
 
-        providerCanvas.addEventListener('pointerdown', () => {
-            document.getElementById('providerSigWrapper').classList.add('signing', 'has-sig');
-            updateProgress();
-        });
-
         window.addEventListener('resize', () => {
-            // Save data before resize
             const cData = clientPad.toData();
-            const pData = providerPad.toData();
             resizeCanvas(clientCanvas);
-            resizeCanvas(providerCanvas);
             clientPad.fromData(cData);
-            providerPad.fromData(pData);
         });
     }
 
@@ -959,9 +1093,6 @@
         if (type === 'client') {
             clientPad.clear();
             document.getElementById('clientSigWrapper').classList.remove('has-sig', 'signing');
-        } else {
-            providerPad.clear();
-            document.getElementById('providerSigWrapper').classList.remove('has-sig', 'signing');
         }
         updateProgress();
     }
@@ -998,7 +1129,6 @@
             const d = new Date(hasDate);
             const formatted = d.toLocaleDateString('he-IL');
             document.getElementById('clientSigDate').textContent = 'תאריך: ' + formatted;
-            document.getElementById('providerSigDate').textContent = 'תאריך: ' + formatted;
         }
     }
 
